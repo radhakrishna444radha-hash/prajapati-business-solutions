@@ -1,6 +1,5 @@
-/* PUBLIC values only. Paste your Supabase Project URL and the public anon/publishable key.
-   NEVER put a service_role key, password or any other secret in this file. */
+/* PUBLIC values only */
 window.PBS_CONFIG = {
-  SUPABASE_URL: '',
-  SUPABASE_ANON_KEY: ''
+  SUPABASE_URL: 'https://kwmhmwbqxqeedzyqtuen.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_eopfxLFWurXT81dIiv0k1w_UzAcaj7-'
 };
