@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Send an Enquiry | PRAJAPATI BUSINESS SOLUTIONS</title>
+<meta name="description" content="Send an enquiry for property, security guard or solar services to PRAJAPATI BUSINESS SOLUTIONS in Guna, Madhya Pradesh.">
+<meta property="og:title" content="Send an Enquiry | PRAJAPATI BUSINESS SOLUTIONS">
+<meta property="og:description" content="Send an enquiry for property, security guard or solar services to PRAJAPATI BUSINESS SOLUTIONS in Guna, Madhya Pradesh.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0a2f33">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header"><div class="container header-row">
+<a class="brand" href="index.html"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#0a2f33"/><circle cx="42" cy="22" r="11" fill="#f4b400"/><path d="M10 54V34h14v20zM26 54V24h14v30zM42 54V38h12v16z" fill="#1b7a80"/></svg><span class="brand-name">PRAJAPATI BUSINESS SOLUTIONS<span class="brand-sub">Guna, Madhya Pradesh</span></span></a>
+<button class="nav-toggle" aria-expanded="false" aria-controls="site-nav" type="button">Menu</button>
+<nav class="nav" id="site-nav" aria-label="Main"><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="services.html">Services</a></li><li><a href="property-listings.html">Listings</a></li><li><a href="contact.html">Contact</a></li><li><a class="btn btn-primary" href="enquiry.html">Send enquiry</a></li></ul></nav>
+</div></header>
+<main id="main">
+<section class="page-head"><div class="container"><p class="crumbs"><a href="index.html">Home</a> / Enquiry</p><h1>Send an enquiry</h1><p>Choose a service and tell us what you need.</p></div></section>
+<section class="section"><div class="container">
+<div id="form-success" class="form-status ok" role="status" tabindex="-1" hidden>
+<p><strong>Thank you. Your enquiry has been received.</strong></p><p id="success-ref" hidden></p><p>We will get in touch using the details you gave us.</p></div>
+<div id="form-status" class="form-status" role="alert" tabindex="-1" hidden>
+<p><strong id="status-msg"></strong></p>
+<p>You can also call <a href="tel:+919039872926">+91 90398 72926</a> or email <a href="mailto:radhakrishna444radha@gmail.com">radhakrishna444radha@gmail.com</a>.</p></div>
+<noscript><div class="notice"><p>This form needs JavaScript. Please call <a href="tel:+919039872926">+91 90398 72926</a> or email <a href="mailto:radhakrishna444radha@gmail.com">radhakrishna444radha@gmail.com</a>.</p></div></noscript>
+<form id="enquiry-form" class="form" novalidate>
+<div class="field"><label for="full_name">Full name</label><input type="text" id="full_name" name="full_name" aria-describedby="err-full_name" autocomplete="name" maxlength="100" required><span class="err" id="err-full_name"></span></div>
+<div class="field"><label for="phone">Mobile number</label><input type="tel" id="phone" name="phone" aria-describedby="hint-phone err-phone" autocomplete="tel" inputmode="tel" required><span class="hint" id="hint-phone">10-digit Indian mobile number</span><span class="err" id="err-phone"></span></div>
+<div class="field"><label for="email">Email (optional)</label><input type="email" id="email" name="email" aria-describedby="err-email" autocomplete="email"><span class="err" id="err-email"></span></div>
+<div class="field"><label for="city">City</label><input type="text" id="city" name="city" list="cities" autocomplete="address-level2" maxlength="80" required aria-describedby="err-city"><datalist id="cities"><option value="Guna"><option value="Indore"><option value="Ujjain"><option value="Gwalior"></datalist><span class="err" id="err-city"></span></div>
+<div class="field"><label for="service">Service</label><select id="service" name="service" aria-describedby="err-service" required><option value="">Choose</option><option value="property">Property Services</option><option value="security_guard">Security Guard Services</option><option value="solar">Solar Services</option></select><span class="err" id="err-service"></span></div>
+<fieldset class="svc-fields" data-service="property" hidden><legend>Property details (optional)</legend><div class="field"><label for="property_need">What do you need?</label><select id="property_need" name="property_need" aria-describedby="err-property_need"><option value="">Choose</option><option value="buy">Buy a property</option><option value="sell">Sell a property</option><option value="rent">Rent a property</option><option value="lease">Lease a property</option><option value="management">Property management</option></select><span class="err" id="err-property_need"></span></div><div class="field"><label for="property_type">Property type</label><input type="text" id="property_type" name="property_type" aria-describedby="hint-property_type err-property_type" maxlength="80"><span class="hint" id="hint-property_type">For example house, plot, shop.</span><span class="err" id="err-property_type"></span></div><div class="field"><label for="property_area">Area or locality</label><input type="text" id="property_area" name="property_area" aria-describedby="err-property_area" maxlength="80"><span class="err" id="err-property_area"></span></div><div class="field"><label for="budget">Budget or expected price or rent</label><input type="text" id="budget" name="budget" aria-describedby="err-budget" maxlength="80"><span class="err" id="err-budget"></span></div></fieldset><fieldset class="svc-fields" data-service="security_guard" hidden><legend>Security guard details (optional)</legend><div class="field"><label for="premises_type">Type of premises</label><input type="text" id="premises_type" name="premises_type" aria-describedby="hint-premises_type err-premises_type" maxlength="80"><span class="hint" id="hint-premises_type">For example office, factory, residential.</span><span class="err" id="err-premises_type"></span></div><div class="field"><label for="guards_needed">Number of guards needed</label><input type="number" id="guards_needed" name="guards_needed" aria-describedby="err-guards_needed" min="1" max="9999" inputmode="numeric"><span class="err" id="err-guards_needed"></span></div><div class="field"><label for="start_timeline">When do you need guards?</label><input type="text" id="start_timeline" name="start_timeline" aria-describedby="err-start_timeline" maxlength="80"><span class="err" id="err-start_timeline"></span></div></fieldset><fieldset class="svc-fields" data-service="solar" hidden><legend>Solar details (optional)</legend><div class="field"><label for="solar_category">Type of installation</label><select id="solar_category" name="solar_category" aria-describedby="err-solar_category"><option value="">Choose</option><option value="residential">Residential</option><option value="commercial">Commercial</option><option value="not_sure">Not sure</option></select><span class="err" id="err-solar_category"></span></div><div class="field"><label for="monthly_bill">Approximate monthly electricity bill</label><input type="text" id="monthly_bill" name="monthly_bill" aria-describedby="err-monthly_bill" maxlength="80"><span class="err" id="err-monthly_bill"></span></div><div class="field"><label for="roof_available">Do you have a usable rooftop?</label><select id="roof_available" name="roof_available" aria-describedby="err-roof_available"><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option><option value="not_sure">Not sure</option></select><span class="err" id="err-roof_available"></span></div><div class="field"><label for="owns_property">Do you own the property?</label><select id="owns_property" name="owns_property" aria-describedby="err-owns_property"><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option><option value="not_sure">Not sure</option></select><span class="err" id="err-owns_property"></span></div></fieldset>
+<div class="field"><label for="message">Your message</label><textarea id="message" name="message" aria-describedby="hint-message err-message" maxlength="1500" required></textarea><span class="hint" id="hint-message">Tell us what you need and your timeline.</span><span class="err" id="err-message"></span></div>
+<div class="hp" aria-hidden="true"><label for="website">Leave this field empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
+<div class="field"><div class="check-row"><input type="checkbox" id="consent" name="consent" aria-describedby="err-consent"><label for="consent">I agree that PRAJAPATI BUSINESS SOLUTIONS may contact me about this enquiry and store the details I enter, as described in the <a href="privacy-policy.html">Privacy Policy</a>.</label></div><span class="err" id="err-consent"></span></div>
+<div><button class="btn btn-dark" type="submit">Submit enquiry</button></div>
+</form></div></section>
+</main>
+<footer class="site-footer"><div class="container">
+<div class="foot-grid">
+<div><h2>PRAJAPATI BUSINESS SOLUTIONS</h2><p>Property, security guard and solar services in Guna, Indore, Ujjain, Gwalior and nearby districts of Madhya Pradesh.</p></div>
+<div><h2>Services</h2><ul><li><a href="property-services.html">Property Services</a></li><li><a href="security-guard-services.html">Security Guard Services</a></li><li><a href="solar-services.html">Solar Services</a></li><li><a href="property-listings.html">Property Listings</a></li></ul></div>
+<div><h2>Company</h2><ul><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li><li><a href="enquiry.html">Enquiry</a></li><li><a href="privacy-policy.html">Privacy Policy</a></li><li><a href="terms-and-conditions.html">Terms &amp; Conditions</a></li></ul></div>
+<div><h2>Contact</h2><ul><li>Guna, Madhya Pradesh, India</li><li><a href="tel:+919039872926">+91 90398 72926</a></li><li><a href="mailto:radhakrishna444radha@gmail.com">radhakrishna444radha@gmail.com</a></li></ul></div>
+</div>
+<p class="foot-note">&copy; <span id="year">2026</span> PRAJAPATI BUSINESS SOLUTIONS. All rights reserved.</p>
+</div></footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/site.js"></script>
+<script src="assets/js/enquiry-form.js"></script>
+</body>
+</html>
