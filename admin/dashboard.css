@@ -1,4 +1,9 @@
 
+/* ==========================================
+   PRAJAPATI BUSINESS SOLUTIONS
+   ADMIN DASHBOARD - UPDATED STYLES
+========================================== */
+
 * {
   box-sizing: border-box;
 }
@@ -9,6 +14,8 @@ body {
   color: #29251f;
   font-family: Arial, sans-serif;
 }
+
+/* HEADER */
 
 .topbar {
   background: #29251f;
@@ -32,6 +39,8 @@ body {
   font-size: 13px;
 }
 
+/* BUTTONS */
+
 button {
   border: 0;
   border-radius: 7px;
@@ -40,17 +49,27 @@ button {
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: background .2s ease, opacity .2s ease;
 }
 
 button:hover {
   background: #70491c;
 }
 
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* MAIN CONTAINER */
+
 .container {
   width: 90%;
   max-width: 1400px;
   margin: 35px auto;
 }
+
+/* WELCOME SECTION */
 
 .welcome {
   display: flex;
@@ -70,6 +89,8 @@ button:hover {
   color: #81796e;
   font-size: 14px;
 }
+
+/* STATISTICS */
 
 .stats {
   display: grid;
@@ -98,6 +119,8 @@ button:hover {
   color: #8b5e27;
 }
 
+/* ENQUIRY SECTION */
+
 .leads-section {
   background: white;
   border: 1px solid #e8e0d3;
@@ -115,6 +138,8 @@ button:hover {
   color: #81796e;
   font-size: 13px;
 }
+
+/* SEARCH AND FILTERS */
 
 .filters {
   display: flex;
@@ -140,9 +165,19 @@ button:hover {
   flex: 1;
 }
 
+.filters input:focus,
+.filters select:focus {
+  outline: 2px solid rgba(139, 94, 39, .3);
+  border-color: #8b5e27;
+}
+
+/* ENQUIRY TABLE */
+
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
+  border: 1px solid #eee9e1;
+  border-radius: 8px;
 }
 
 table {
@@ -171,11 +206,48 @@ tbody tr:hover {
   background: #fcfaf6;
 }
 
-.table-note {
-  color: #81796e;
-  font-size: 12px;
-  margin-top: 18px;
+tbody tr:last-child td {
+  border-bottom: 0;
 }
+
+/* STATUS MANAGEMENT */
+
+.lead-status-select {
+  min-width: 115px;
+  padding: 9px 10px;
+  margin-right: 7px;
+  border: 1px solid #ddd5c9;
+  border-radius: 7px;
+  background: #fff;
+  color: #29251f;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.lead-status-select:focus {
+  outline: 2px solid rgba(139, 94, 39, .3);
+  border-color: #8b5e27;
+}
+
+.update-status-button {
+  padding: 9px 12px;
+  background: #8b5e27;
+  color: #fff;
+  border-radius: 7px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.update-status-button:hover {
+  background: #70491c;
+}
+
+.update-status-button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* DASHBOARD MESSAGES */
 
 #dashboard-message {
   margin: 15px 0;
@@ -185,6 +257,23 @@ tbody tr:hover {
   color: #70491c;
   font-size: 13px;
 }
+
+.table-note {
+  color: #81796e;
+  font-size: 12px;
+  margin-top: 18px;
+}
+
+/* ACCESSIBILITY */
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #8b5e27;
+  outline-offset: 2px;
+}
+
+/* TABLET RESPONSIVE */
 
 @media (max-width: 900px) {
   .stats {
@@ -200,6 +289,8 @@ tbody tr:hover {
     flex: 1 1 100%;
   }
 }
+
+/* MOBILE RESPONSIVE */
 
 @media (max-width: 550px) {
   .topbar {
@@ -234,5 +325,14 @@ tbody tr:hover {
 
   .leads-section {
     padding: 15px;
+  }
+
+  .lead-status-select {
+    min-width: 105px;
+    margin-bottom: 7px;
+  }
+
+  .update-status-button {
+    padding: 9px 10px;
   }
 }
