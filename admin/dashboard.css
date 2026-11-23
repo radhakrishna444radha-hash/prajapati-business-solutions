@@ -1,7 +1,7 @@
 
 /* ==========================================
    PRAJAPATI BUSINESS SOLUTIONS
-   ADMIN DASHBOARD - UPDATED STYLES
+   ADMIN DASHBOARD - PROFESSIONAL VERSION
 ========================================== */
 
 * {
@@ -13,6 +13,10 @@ body {
   background: #f5f2eb;
   color: #29251f;
   font-family: Arial, sans-serif;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 /* HEADER */
@@ -210,6 +214,22 @@ tbody tr:last-child td {
   border-bottom: 0;
 }
 
+/* LEAD ID BUTTON */
+
+.view-lead-button {
+  padding: 7px 9px;
+  background: #f5f2eb;
+  color: #805522;
+  border: 1px solid #e8e0d3;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.view-lead-button:hover {
+  background: #eee5d7;
+  color: #593914;
+}
+
 /* STATUS MANAGEMENT */
 
 .lead-status-select {
@@ -262,6 +282,165 @@ tbody tr:last-child td {
   color: #81796e;
   font-size: 12px;
   margin-top: 18px;
+}
+
+/* ==========================================
+   LEAD DETAILS MODAL
+========================================== */
+
+.lead-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 25px;
+  background: rgba(25, 22, 18, .65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.lead-modal-content {
+  width: 100%;
+  max-width: 780px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, .2);
+}
+
+/* MODAL HEADER */
+
+.lead-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee9e1;
+}
+
+.lead-modal-header h2 {
+  margin: 0 0 7px;
+  font-size: 23px;
+}
+
+.lead-modal-header p {
+  margin: 0;
+  color: #81796e;
+  font-size: 13px;
+}
+
+#close-lead-details {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  background: #f5f2eb;
+  color: #29251f;
+  font-size: 25px;
+  line-height: 1;
+}
+
+#close-lead-details:hover {
+  background: #e9dfd0;
+}
+
+/* CUSTOMER DETAILS */
+
+#lead-details-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  padding: 23px 0;
+}
+
+.lead-detail-item {
+  padding: 15px;
+  border: 1px solid #eee9e1;
+  border-radius: 9px;
+  background: #fcfaf6;
+  min-width: 0;
+}
+
+.lead-detail-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #81796e;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.lead-detail-item p {
+  margin: 0;
+  color: #29251f;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* REQUIREMENT SECTION */
+
+#lead-details-content h3 {
+  grid-column: 1 / -1;
+  margin: 12px 0 0;
+  font-size: 17px;
+}
+
+.lead-requirement {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 0;
+  padding: 18px;
+  border-radius: 9px;
+  background: #f5f2eb;
+  color: #40382e;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* STATUS HISTORY */
+
+.lead-history-section {
+  padding-top: 22px;
+  border-top: 1px solid #eee9e1;
+}
+
+.lead-history-section h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+}
+
+#lead-history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lead-history-entry {
+  position: relative;
+  padding: 14px 16px;
+  background: #fcfaf6;
+  border-left: 3px solid #8b5e27;
+  border-radius: 7px;
+}
+
+.lead-history-entry p {
+  margin: 0 0 7px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #40382e;
+}
+
+.lead-history-entry small {
+  color: #81796e;
+  font-size: 12px;
 }
 
 /* ACCESSIBILITY */
@@ -334,5 +513,31 @@ select:focus-visible {
 
   .update-status-button {
     padding: 9px 10px;
+  }
+
+  .lead-modal {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .lead-modal-content {
+    margin: 10px 0;
+    padding: 19px;
+    max-height: 95vh;
+    border-radius: 11px;
+  }
+
+  .lead-modal-header h2 {
+    font-size: 19px;
+  }
+
+  #lead-details-content {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  #lead-details-content h3,
+  .lead-requirement {
+    grid-column: 1;
   }
 }
