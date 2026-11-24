@@ -53,6 +53,145 @@
       </article>
     </section>
 
+    <!-- PROPERTY MANAGEMENT -->
+    <section class="leads-section property-management-section">
+
+      <div class="section-heading">
+        <div>
+          <h2>Property Management</h2>
+          <p>Review and manage property submissions received from customers</p>
+        </div>
+
+        <button id="refresh-properties" type="button">
+          Refresh Properties
+        </button>
+      </div>
+
+      <!-- PROPERTY SUMMARY -->
+      <div class="stats property-stats">
+        <article class="stat-card">
+          <p>Total Properties</p>
+          <h2 id="total-properties">—</h2>
+        </article>
+
+        <article class="stat-card">
+          <p>Pending Approval</p>
+          <h2 id="pending-properties">—</h2>
+        </article>
+
+        <article class="stat-card">
+          <p>Published</p>
+          <h2 id="published-properties">—</h2>
+        </article>
+
+        <article class="stat-card">
+          <p>Inactive / Sold / Rented</p>
+          <h2 id="inactive-properties">—</h2>
+        </article>
+      </div>
+
+      <p id="property-management-message" role="status" hidden></p>
+
+      <!-- PROPERTY FILTERS -->
+      <div class="filters property-filters">
+
+        <input
+          type="search"
+          id="search-properties"
+          placeholder="Search by title, location or property ID"
+          aria-label="Search properties"
+        >
+
+        <select id="filter-property-type" aria-label="Filter property type">
+          <option value="">All Property Types</option>
+          <option value="plot">Plot</option>
+          <option value="house">House</option>
+          <option value="flat">Flat / Apartment</option>
+          <option value="shop">Shop</option>
+          <option value="commercial">Commercial</option>
+          <option value="other">Other</option>
+        </select>
+
+        <select id="filter-property-status" aria-label="Filter property status">
+          <option value="">All Property Statuses</option>
+          <option value="pending">Pending Approval</option>
+          <option value="available">Available</option>
+          <option value="sold">Sold</option>
+          <option value="rented">Rented</option>
+          <option value="inactive">Inactive</option>
+        </select>
+
+      </div>
+
+      <!-- PROPERTY TABLE -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Property Type</th>
+              <th>Listing Type</th>
+              <th>Location</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Published</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="properties-table-body">
+            <tr>
+              <td colspan="8">Loading properties...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="table-note" id="properties-count"></p>
+
+    </section>
+
+    <!-- PROPERTY DETAILS MODAL -->
+    <section id="property-details-modal" class="lead-modal" hidden>
+      <div class="lead-modal-content">
+
+        <div class="lead-modal-header">
+          <div>
+            <h2>Property Details</h2>
+            <p>Review property information and submitted media</p>
+          </div>
+
+          <button
+            id="close-property-details"
+            type="button"
+            aria-label="Close property details"
+          >×</button>
+        </div>
+
+        <div id="property-details-content">
+          Select a property to view its details.
+        </div>
+
+        <div class="property-media-section">
+          <h3>Property Photos & Videos</h3>
+          <div id="property-media-content">
+            Property photos and videos will appear here.
+          </div>
+        </div>
+
+        <div class="property-review-actions">
+          <button id="approve-property" type="button">
+            Approve & Publish
+          </button>
+
+          <button id="reject-property" type="button">
+            Reject Submission
+          </button>
+        </div>
+
+      </div>
+    </section>
+
     <!-- FOLLOW-UP MANAGEMENT -->
     <section class="leads-section follow-ups-section">
 

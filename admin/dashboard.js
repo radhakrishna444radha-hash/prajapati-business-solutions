@@ -1,7 +1,9 @@
 
 (function () {
+  'use strict';
+
   // ==========================================
-  // EXISTING DASHBOARD ELEMENTS
+  // DASHBOARD ELEMENTS
   // ==========================================
 
   const tableBody = document.getElementById('leads-table-body');
@@ -16,9 +18,7 @@
   const detailsContent = document.getElementById('lead-details-content');
   const historyContent = document.getElementById('lead-history-content');
 
-  // ==========================================
-  // FOLLOW-UP ELEMENTS
-  // ==========================================
+  // FOLLOW-UPS
 
   const followUpForm = document.getElementById('follow-up-form');
   const followUpLeadSelect = document.getElementById('follow-up-lead');
@@ -31,10 +31,31 @@
   const refreshFollowUpsButton = document.getElementById('refresh-follow-ups');
   const saveFollowUpButton = document.getElementById('save-follow-up');
 
-  if (!tableBody) return;
+  // PROPERTIES
+
+  const propertiesTableBody = document.getElementById('properties-table-body');
+  const propertyMessage = document.getElementById('property-management-message');
+  const propertySearchInput = document.getElementById('search-properties');
+  const propertyTypeFilter = document.getElementById('filter-property-type');
+  const propertyReviewFilter = document.getElementById('filter-property-status');
+  const refreshPropertiesButton = document.getElementById('refresh-properties');
+
+  const propertyModal = document.getElementById('property-details-modal');
+  const closePropertyModalButton = document.getElementById('close-property-details');
+  const propertyDetailsContent = document.getElementById('property-details-content');
+  const propertyMediaContent = document.getElementById('property-media-content');
+  const approvePropertyButton = document.getElementById('approve-property');
+  const rejectPropertyButton = document.getElementById('reject-property');
+
+  if (!tableBody) {
+    console.error('Dashboard: leads table was not found.');
+    return;
+  }
 
   let allLeads = [];
   let allFollowUps = [];
+  let allProperties = [];
+  let selectedProperty = null;
 
   const STATUSES = [
     { value: 'new', label: 'New' },
@@ -61,23 +82,60 @@
     message.hidden = !text;
   }
 
-  function showFollowUpMessage(text) {
+  function showFollowUpMessage(text, isError = false) {
     if (!followUpMessage) return;
     followUpMessage.textContent = text;
     followUpMessage.hidden = !text;
+    followUpMessage.classList.toggle('error', isError);
+  }
+
+  function showPropertyMessage(text, isError = false) {
+    if (!propertyMessage) return;
+    propertyMessage.textContent = text;
+    propertyMessage.hidden = !text;
+    propertyMessage.classList.toggle('error', isError);
   }
 
   function formatDate(value) {
     if (!value) return '—';
 
     const date = new Date(value);
-
     if (Number.isNaN(date.getTime())) return '—';
 
     return date.toLocaleString('en-IN', {
       dateStyle: 'medium',
       timeStyle: 'short'
     });
+  }
+
+  function createCell(value) {
+    const cell = document.createElement('td');
+    cell.textContent =
+      value === null || value === undefined || value === ''
+        ? '—'
+        : String(value);
+    return cell;
+  }
+
+  function addDetailRow(container, label, value) {
+    const item = document.createElement('div');
+    item.className = 'lead-detail-item';
+
+    const heading = document.createElement('strong');
+    heading.textContent = label;
+
+    const content = document.createElement('p');
+
+    if (value === null || value === undefined || value === '') {
+      content.textContent = '—';
+    } else if (typeof value === 'object') {
+      content.textContent = JSON.stringify(value, null, 2);
+    } else {
+      content.textContent = String(value);
+    }
+
+    item.append(heading, content);
+    container.appendChild(item);
   }
 
   function serviceName(service) {
@@ -101,26 +159,14 @@
     return item ? item.label : status || '—';
   }
 
-  function updateStats() {
-    document.getElementById('total-leads').textContent =
-      allLeads.length;
+  function propertyReviewStatusName(status) {
+    const names = {
+      pending: 'Pending Review',
+      approved: 'Approved',
+      rejected: 'Rejected'
+    };
 
-    document.getElementById('new-leads').textContent =
-      allLeads.filter(lead => lead.status === 'new').length;
-
-    document.getElementById('contacted-leads').textContent =
-      allLeads.filter(lead => lead.status === 'contacted').length;
-
-    document.getElementById('closed-leads').textContent =
-      allLeads.filter(lead =>
-        ['converted', 'lost'].includes(lead.status)
-      ).length;
-  }
-
-  function createCell(value) {
-    const cell = document.createElement('td');
-    cell.textContent = value || '—';
-    return cell;
+    return names[status] || status || '—';
   }
 
   // ==========================================
@@ -180,6 +226,7 @@
       throw new Error(
         result?.message ||
         result?.msg ||
+        result?.error_description ||
         'The database request could not be completed.'
       );
     }
@@ -188,8 +235,34 @@
   }
 
   // ==========================================
-  // LEAD STATUS MANAGEMENT
+  // LEAD MANAGEMENT
   // ==========================================
+
+  function updateStats() {
+    const total = document.getElementById('total-leads');
+    const fresh = document.getElementById('new-leads');
+    const contacted = document.getElementById('contacted-leads');
+    const closed = document.getElementById('closed-leads');
+
+    if (total) total.textContent = allLeads.length;
+
+    if (fresh) {
+      fresh.textContent =
+        allLeads.filter(lead => lead.status === 'new').length;
+    }
+
+    if (contacted) {
+      contacted.textContent =
+        allLeads.filter(lead => lead.status === 'contacted').length;
+    }
+
+    if (closed) {
+      closed.textContent =
+        allLeads.filter(lead =>
+          ['converted', 'lost'].includes(lead.status)
+        ).length;
+    }
+  }
 
   function createStatusSelect(currentStatus) {
     const select = document.createElement('select');
@@ -209,22 +282,22 @@
 
   function createLeadIdButton(lead) {
     const button = document.createElement('button');
-
     button.type = 'button';
     button.className = 'view-lead-button';
     button.textContent = lead.lead_id || 'View Details';
 
-    button.addEventListener('click', function () {
-      openLeadDetails(lead);
-    });
+    button.addEventListener('click', () => openLeadDetails(lead));
 
     return button;
   }
 
   function renderLeads() {
-    const search = searchInput.value.trim().toLowerCase();
-    const selectedService = serviceFilter.value;
-    const selectedStatus = statusFilter.value;
+    const search = searchInput
+      ? searchInput.value.trim().toLowerCase()
+      : '';
+
+    const selectedService = serviceFilter ? serviceFilter.value : '';
+    const selectedStatus = statusFilter ? statusFilter.value : '';
 
     const filtered = allLeads.filter(lead => {
       const matchesSearch = [
@@ -252,10 +325,8 @@
     if (filtered.length === 0) {
       const row = document.createElement('tr');
       const cell = document.createElement('td');
-
       cell.colSpan = 8;
       cell.textContent = 'No enquiries found.';
-
       row.appendChild(cell);
       tableBody.appendChild(row);
     } else {
@@ -281,7 +352,7 @@
         updateButton.textContent = 'Update';
         updateButton.className = 'update-status-button';
 
-        updateButton.addEventListener('click', function () {
+        updateButton.addEventListener('click', () => {
           updateLeadStatus(
             lead.lead_id,
             statusSelect.value,
@@ -289,16 +360,53 @@
           );
         });
 
-        actionCell.appendChild(statusSelect);
-        actionCell.appendChild(updateButton);
-
+        actionCell.append(statusSelect, updateButton);
         row.appendChild(actionCell);
         tableBody.appendChild(row);
       });
     }
 
-    document.getElementById('leads-count').textContent =
-      `Showing ${filtered.length} of ${allLeads.length} enquiries`;
+    const count = document.getElementById('leads-count');
+
+    if (count) {
+      count.textContent =
+        `Showing ${filtered.length} of ${allLeads.length} enquiries`;
+    }
+  }
+
+  async function loadLeads() {
+    if (refreshButton) refreshButton.disabled = true;
+
+    showMessage('Loading enquiries...');
+
+    try {
+      const query = new URLSearchParams();
+      query.set(
+        'select',
+        'id,lead_id,full_name,phone,email,city,service,details,status,created_at,updated_at'
+      );
+      query.set('order', 'created_at.desc');
+
+      const result = await supabaseRequest(
+        `leads?${query.toString()}`
+      );
+
+      allLeads = Array.isArray(result) ? result : [];
+
+      updateStats();
+      renderLeads();
+      populateFollowUpLeadOptions();
+
+      showMessage('');
+
+      await loadFollowUps();
+
+    } catch (error) {
+      console.error('Lead loading error:', error);
+      showMessage(error.message || 'Could not load enquiries.');
+    } finally {
+      if (refreshButton) refreshButton.disabled = false;
+    }
   }
 
   async function updateLeadStatus(leadId, newStatus, button) {
@@ -340,9 +448,7 @@
       );
 
       if (!Array.isArray(result) || result.length === 0) {
-        throw new Error(
-          'No enquiry was updated. Please check your admin permissions.'
-        );
+        throw new Error('No enquiry was updated. Check admin permissions.');
       }
 
       const updatedLead = result[0];
@@ -355,13 +461,11 @@
 
       updateStats();
       renderLeads();
-
       showMessage(`Status updated successfully for ${leadId}.`);
 
     } catch (error) {
       console.error('Status update error:', error);
       showMessage(error.message || 'Could not update enquiry status.');
-
       button.disabled = false;
       button.textContent = 'Update';
     }
@@ -371,29 +475,9 @@
   // LEAD DETAILS AND STATUS HISTORY
   // ==========================================
 
-  function addDetailRow(container, label, value) {
-    const item = document.createElement('div');
-    item.className = 'lead-detail-item';
-
-    const heading = document.createElement('strong');
-    heading.textContent = label;
-
-    const content = document.createElement('p');
-
-    if (value === null || value === undefined || value === '') {
-      content.textContent = '—';
-    } else if (typeof value === 'object') {
-      content.textContent = JSON.stringify(value, null, 2);
-    } else {
-      content.textContent = String(value);
-    }
-
-    item.appendChild(heading);
-    item.appendChild(content);
-    container.appendChild(item);
-  }
-
   function renderLeadDetails(lead) {
+    if (!detailsContent) return;
+
     detailsContent.replaceChildren();
 
     addDetailRow(detailsContent, 'Lead ID', lead.lead_id);
@@ -406,25 +490,24 @@
     addDetailRow(detailsContent, 'Enquiry Date', formatDate(lead.created_at));
     addDetailRow(detailsContent, 'Last Updated', formatDate(lead.updated_at));
 
-    const requirementHeading = document.createElement('h3');
-    requirementHeading.textContent = 'Customer Requirement';
-
-    detailsContent.appendChild(requirementHeading);
+    const heading = document.createElement('h3');
+    heading.textContent = 'Customer Requirement';
+    detailsContent.appendChild(heading);
 
     const requirement = document.createElement('pre');
     requirement.className = 'lead-requirement';
 
-    if (lead.details && typeof lead.details === 'object') {
-      requirement.textContent = JSON.stringify(lead.details, null, 2);
-    } else {
-      requirement.textContent =
-        String(lead.details || 'No additional details provided.');
-    }
+    requirement.textContent =
+      lead.details && typeof lead.details === 'object'
+        ? JSON.stringify(lead.details, null, 2)
+        : String(lead.details || 'No additional details provided.');
 
     detailsContent.appendChild(requirement);
   }
 
   async function loadLeadHistory(lead) {
+    if (!historyContent) return;
+
     historyContent.replaceChildren();
 
     const loading = document.createElement('p');
@@ -433,7 +516,6 @@
 
     try {
       const query = new URLSearchParams();
-
       query.set('select', 'old_status,new_status,changed_at');
       query.set('lead_id', `eq.${lead.id}`);
       query.set('order', 'changed_at.desc');
@@ -462,14 +544,12 @@
         const date = document.createElement('small');
         date.textContent = formatDate(item.changed_at);
 
-        entry.appendChild(change);
-        entry.appendChild(date);
+        entry.append(change, date);
         historyContent.appendChild(entry);
       });
 
     } catch (error) {
       console.error('Lead history error:', error);
-
       historyContent.replaceChildren();
 
       const errorText = document.createElement('p');
@@ -482,12 +562,11 @@
 
   async function openLeadDetails(lead) {
     if (!modal || !detailsContent || !historyContent) {
-      showMessage('Lead details panel is unavailable. Please check dashboard.html.');
+      showMessage('Lead details panel is unavailable.');
       return;
     }
 
     modal.hidden = false;
-
     renderLeadDetails(lead);
     await loadLeadHistory(lead);
   }
@@ -527,7 +606,9 @@
   function renderFollowUps() {
     if (!followUpTableBody) return;
 
-    const selectedStatus = followUpFilter ? followUpFilter.value : '';
+    const selectedStatus = followUpFilter
+      ? followUpFilter.value
+      : '';
 
     const filtered = allFollowUps.filter(item =>
       !selectedStatus || item.status === selectedStatus
@@ -538,17 +619,17 @@
     if (filtered.length === 0) {
       const row = document.createElement('tr');
       const cell = document.createElement('td');
-
       cell.colSpan = 6;
       cell.textContent = 'No follow-ups found.';
-
       row.appendChild(cell);
       followUpTableBody.appendChild(row);
     } else {
       filtered.forEach(item => {
         const row = document.createElement('tr');
 
-        const lead = allLeads.find(lead => lead.id === item.lead_id);
+        const lead = allLeads.find(
+          lead => lead.id === item.lead_id
+        );
 
         row.appendChild(createCell(lead ? lead.full_name : 'Customer'));
         row.appendChild(createCell(lead ? lead.lead_id : '—'));
@@ -564,7 +645,7 @@
           completeButton.textContent = 'Complete';
           completeButton.className = 'update-status-button';
 
-          completeButton.addEventListener('click', function () {
+          completeButton.addEventListener('click', () => {
             updateFollowUpStatus(item.id, 'completed', completeButton);
           });
 
@@ -573,12 +654,11 @@
           cancelButton.textContent = 'Cancel';
           cancelButton.className = 'update-status-button';
 
-          cancelButton.addEventListener('click', function () {
+          cancelButton.addEventListener('click', () => {
             updateFollowUpStatus(item.id, 'cancelled', cancelButton);
           });
 
-          actionCell.appendChild(completeButton);
-          actionCell.appendChild(cancelButton);
+          actionCell.append(completeButton, cancelButton);
         } else {
           actionCell.textContent = '—';
         }
@@ -612,7 +692,6 @@
 
     try {
       const query = new URLSearchParams();
-
       query.set(
         'select',
         'id,lead_id,follow_up_at,notes,status,created_at'
@@ -624,7 +703,6 @@
       );
 
       allFollowUps = Array.isArray(result) ? result : [];
-
       renderFollowUps();
       showFollowUpMessage('');
 
@@ -636,13 +714,13 @@
       const row = document.createElement('tr');
       const cell = document.createElement('td');
       cell.colSpan = 6;
-      cell.textContent = 'Unable to load follow-ups. Check the message above.';
-
+      cell.textContent = 'Unable to load follow-ups.';
       row.appendChild(cell);
       followUpTableBody.appendChild(row);
 
       showFollowUpMessage(
-        error.message || 'Could not load follow-ups.'
+        error.message || 'Could not load follow-ups.',
+        true
       );
 
     } finally {
@@ -670,14 +748,17 @@
       : '';
 
     if (!leadId || !dateValue) {
-      showFollowUpMessage('Please select a customer and follow-up date.');
+      showFollowUpMessage(
+        'Please select a customer and follow-up date.',
+        true
+      );
       return;
     }
 
     const selectedDate = new Date(dateValue);
 
     if (Number.isNaN(selectedDate.getTime())) {
-      showFollowUpMessage('Please enter a valid follow-up date and time.');
+      showFollowUpMessage('Please enter a valid date and time.', true);
       return;
     }
 
@@ -706,17 +787,16 @@
         throw new Error('Follow-up was not saved. Please try again.');
       }
 
-      followUpForm.reset();
+      if (followUpForm) followUpForm.reset();
 
       showFollowUpMessage('Follow-up scheduled successfully.');
-
       await loadFollowUps();
 
     } catch (error) {
       console.error('Create follow-up error:', error);
-
       showFollowUpMessage(
-        error.message || 'Could not schedule follow-up.'
+        error.message || 'Could not schedule follow-up.',
+        true
       );
 
     } finally {
@@ -727,13 +807,12 @@
 
   async function updateFollowUpStatus(followUpId, newStatus, button) {
     if (!['completed', 'cancelled'].includes(newStatus)) {
-      showFollowUpMessage('Invalid follow-up status.');
+      showFollowUpMessage('Invalid follow-up status.', true);
       return;
     }
 
     button.disabled = true;
     button.textContent = 'Saving...';
-
     showFollowUpMessage('Updating follow-up...');
 
     try {
@@ -756,9 +835,7 @@
       );
 
       if (!Array.isArray(result) || result.length === 0) {
-        throw new Error(
-          'Follow-up was not updated. Please check admin permissions.'
-        );
+        throw new Error('Follow-up was not updated.');
       }
 
       showFollowUpMessage(
@@ -769,9 +846,9 @@
 
     } catch (error) {
       console.error('Update follow-up error:', error);
-
       showFollowUpMessage(
-        error.message || 'Could not update follow-up.'
+        error.message || 'Could not update follow-up.',
+        true
       );
 
       button.disabled = false;
@@ -781,58 +858,509 @@
   }
 
   // ==========================================
-  // LOAD CUSTOMER ENQUIRIES
+  // PROPERTY MANAGEMENT
   // ==========================================
 
-  async function loadLeads() {
-    refreshButton.disabled = true;
-    showMessage('Loading enquiries...');
+  function renderPropertyStats() {
+    const total = allProperties.length;
+
+    const pending = allProperties.filter(
+      property => property.review_status === 'pending'
+    ).length;
+
+    const published = allProperties.filter(
+      property =>
+        property.review_status === 'approved' &&
+        property.is_published === true
+    ).length;
+
+    const inactive = allProperties.filter(
+      property =>
+        property.review_status === 'rejected' ||
+        property.status !== 'available'
+    ).length;
+
+    const totalElement = document.getElementById('total-properties');
+    const pendingElement = document.getElementById('pending-properties');
+    const publishedElement = document.getElementById('published-properties');
+    const inactiveElement = document.getElementById('inactive-properties');
+
+    if (totalElement) totalElement.textContent = total;
+    if (pendingElement) pendingElement.textContent = pending;
+    if (publishedElement) publishedElement.textContent = published;
+    if (inactiveElement) inactiveElement.textContent = inactive;
+  }
+
+  function renderProperties() {
+    if (!propertiesTableBody) return;
+
+    const search = propertySearchInput
+      ? propertySearchInput.value.trim().toLowerCase()
+      : '';
+
+    const typeFilter = propertyTypeFilter
+      ? propertyTypeFilter.value
+      : '';
+
+    const statusFilter = propertyReviewFilter
+      ? propertyReviewFilter.value
+      : '';
+
+    const filtered = allProperties.filter(property => {
+      const searchable = [
+        property.title,
+        property.city,
+        property.owner_name,
+        property.owner_phone,
+        property.listing_type,
+        property.property_type
+      ].join(' ').toLowerCase();
+
+      const matchesSearch = !search || searchable.includes(search);
+      const matchesType =
+        !typeFilter || property.listing_type === typeFilter;
+      const matchesStatus =
+        !statusFilter || property.review_status === statusFilter;
+
+      return matchesSearch && matchesType && matchesStatus;
+    });
+
+    propertiesTableBody.replaceChildren();
+
+    if (filtered.length === 0) {
+      const row = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = 7;
+      cell.textContent = 'No properties found.';
+      row.appendChild(cell);
+      propertiesTableBody.appendChild(row);
+      return;
+    }
+
+    filtered.forEach(property => {
+      const row = document.createElement('tr');
+
+      row.appendChild(createCell(property.title || 'Untitled'));
+      row.appendChild(createCell(property.owner_name));
+      row.appendChild(createCell(property.city));
+      row.appendChild(createCell(property.listing_type));
+      row.appendChild(createCell(property.property_type));
+      row.appendChild(
+        createCell(propertyReviewStatusName(property.review_status))
+      );
+
+      const actionCell = document.createElement('td');
+      const viewButton = document.createElement('button');
+
+      viewButton.type = 'button';
+      viewButton.className = 'view-lead-button';
+      viewButton.textContent = 'View Details';
+
+      viewButton.addEventListener('click', () => {
+        openPropertyDetails(property);
+      });
+
+      actionCell.appendChild(viewButton);
+      row.appendChild(actionCell);
+      propertiesTableBody.appendChild(row);
+    });
+  }
+
+  async function loadProperties() {
+    if (!propertiesTableBody) return;
+
+    if (refreshPropertiesButton) {
+      refreshPropertiesButton.disabled = true;
+    }
+
+    propertiesTableBody.replaceChildren();
+
+    const loadingRow = document.createElement('tr');
+    const loadingCell = document.createElement('td');
+    loadingCell.colSpan = 7;
+    loadingCell.textContent = 'Loading properties...';
+    loadingRow.appendChild(loadingCell);
+    propertiesTableBody.appendChild(loadingRow);
 
     try {
       const query = new URLSearchParams();
 
       query.set(
         'select',
-        'id,lead_id,full_name,phone,email,city,service,status,details,created_at,updated_at'
+        'id,title,slug,description,property_type,listing_type,city,state,address,price,area_sq_rfit,bedroom,bathroom,status,is_published,created_by,created_at,updated_at,owner_name,owner_phone,owner_email,review_status'
       );
 
       query.set('order', 'created_at.desc');
 
       const result = await supabaseRequest(
-        `leads?${query.toString()}`
+        `properties?${query.toString()}`
       );
 
-      allLeads = Array.isArray(result) ? result : [];
+      allProperties = Array.isArray(result) ? result : [];
 
-      updateStats();
-      renderLeads();
-      populateFollowUpLeadOptions();
-
-      showMessage('');
-
-      await loadFollowUps();
+      renderPropertyStats();
+      renderProperties();
+      showPropertyMessage('');
 
     } catch (error) {
-      console.error('Dashboard error:', error);
+      console.error('Property loading error:', error);
 
-      showMessage(
-        error.message || 'Something went wrong while loading enquiries.'
-      );
-
-      tableBody.replaceChildren();
+      propertiesTableBody.replaceChildren();
 
       const row = document.createElement('tr');
       const cell = document.createElement('td');
-
-      cell.colSpan = 8;
-      cell.textContent =
-        'Unable to load enquiries. Please check the error message above.';
-
+      cell.colSpan = 7;
+      cell.textContent = 'Unable to load properties.';
       row.appendChild(cell);
-      tableBody.appendChild(row);
+      propertiesTableBody.appendChild(row);
+
+      showPropertyMessage(
+        error.message || 'Could not load properties.',
+        true
+      );
 
     } finally {
-      refreshButton.disabled = false;
+      if (refreshPropertiesButton) {
+        refreshPropertiesButton.disabled = false;
+      }
+    }
+  }
+
+  // ==========================================
+  // PRIVATE PROPERTY MEDIA PREVIEW
+  // ==========================================
+
+  async function createSignedMediaUrl(storagePath) {
+    const { accessToken, config } = await getSessionDetails();
+
+    const encodedPath = storagePath
+      .split('/')
+      .map(segment => encodeURIComponent(segment))
+      .join('/');
+
+    const response = await fetch(
+      `${config.SUPABASE_URL}/storage/v1/object/sign/property-images/${encodedPath}`,
+      {
+        method: 'POST',
+        headers: {
+          apikey: config.SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          expiresIn: 3600
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || 'Could not create media preview URL.'
+      );
+    }
+
+    const signedPath = result.signedURL || result.signedUrl;
+
+    if (!signedPath) {
+      throw new Error('Could not create media preview URL.');
+    }
+
+    if (
+      signedPath.startsWith('http://') ||
+      signedPath.startsWith('https://')
+    ) {
+      return signedPath;
+    }
+
+    if (signedPath.startsWith('/storage/v1/')) {
+      return `${config.SUPABASE_URL}${signedPath}`;
+    }
+
+    return `${config.SUPABASE_URL}/storage/v1${signedPath}`;
+  }
+
+  async function loadPropertyMedia(propertyId) {
+    if (!propertyMediaContent) return;
+
+    propertyMediaContent.replaceChildren();
+
+    const loading = document.createElement('p');
+    loading.textContent = 'Loading property photos and videos...';
+    propertyMediaContent.appendChild(loading);
+
+    try {
+      const query = new URLSearchParams();
+
+      query.set(
+        'select',
+        'id,property_id,storage_path,caption,sort_order,is_cover,media_type,created_at'
+      );
+
+      query.set('property_id', `eq.${propertyId}`);
+      query.set('order', 'sort_order.asc');
+
+      const media = await supabaseRequest(
+        `property_images?${query.toString()}`
+      );
+
+      propertyMediaContent.replaceChildren();
+
+      if (!Array.isArray(media) || media.length === 0) {
+        const empty = document.createElement('p');
+        empty.textContent = 'No photos or videos uploaded for this property.';
+        propertyMediaContent.appendChild(empty);
+        return;
+      }
+
+      for (const item of media) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'property-media-item';
+
+        const caption = document.createElement('p');
+        caption.textContent =
+          `${item.caption || 'Property media'}${item.is_cover ? ' (Cover)' : ''}`;
+
+        wrapper.appendChild(caption);
+
+        try {
+          const mediaUrl = await createSignedMediaUrl(item.storage_path);
+
+          let preview;
+
+          if (item.media_type === 'video') {
+            preview = document.createElement('video');
+            preview.controls = true;
+            preview.preload = 'metadata';
+          } else {
+            preview = document.createElement('img');
+            preview.alt = item.caption || 'Property photo';
+            preview.loading = 'lazy';
+          }
+
+          preview.src = mediaUrl;
+          preview.className = 'property-media-preview';
+          wrapper.appendChild(preview);
+
+        } catch (mediaError) {
+          const errorText = document.createElement('p');
+          errorText.textContent =
+            `Media preview unavailable: ${mediaError.message}`;
+          wrapper.appendChild(errorText);
+        }
+
+        propertyMediaContent.appendChild(wrapper);
+      }
+
+    } catch (error) {
+      console.error('Property media loading error:', error);
+      propertyMediaContent.replaceChildren();
+
+      const errorText = document.createElement('p');
+      errorText.textContent =
+        `Could not load property media: ${error.message}`;
+
+      propertyMediaContent.appendChild(errorText);
+    }
+  }
+
+  // ==========================================
+  // PROPERTY DETAILS AND REVIEW
+  // ==========================================
+
+  function renderPropertyDetails(property) {
+    if (!propertyDetailsContent) return;
+
+    propertyDetailsContent.replaceChildren();
+
+    addDetailRow(propertyDetailsContent, 'Property Title', property.title);
+    addDetailRow(propertyDetailsContent, 'Listing Type', property.listing_type);
+    addDetailRow(propertyDetailsContent, 'Property Type', property.property_type);
+    addDetailRow(propertyDetailsContent, 'Description', property.description);
+    addDetailRow(propertyDetailsContent, 'City', property.city);
+    addDetailRow(propertyDetailsContent, 'State', property.state);
+    addDetailRow(propertyDetailsContent, 'Address', property.address);
+    addDetailRow(propertyDetailsContent, 'Price', property.price);
+    addDetailRow(propertyDetailsContent, 'Area (sq. ft.)', property.area_sq_rfit);
+    addDetailRow(propertyDetailsContent, 'Bedrooms', property.bedroom);
+    addDetailRow(propertyDetailsContent, 'Bathrooms', property.bathroom);
+    addDetailRow(propertyDetailsContent, 'Availability', property.status);
+    addDetailRow(
+      propertyDetailsContent,
+      'Review Status',
+      propertyReviewStatusName(property.review_status)
+    );
+    addDetailRow(
+      propertyDetailsContent,
+      'Published',
+      property.is_published ? 'Yes' : 'No'
+    );
+
+    const ownerHeading = document.createElement('h3');
+    ownerHeading.textContent = 'Owner Contact Details';
+    propertyDetailsContent.appendChild(ownerHeading);
+
+    addDetailRow(propertyDetailsContent, 'Owner Name', property.owner_name);
+    addDetailRow(propertyDetailsContent, 'Owner Phone', property.owner_phone);
+    addDetailRow(propertyDetailsContent, 'Owner Email', property.owner_email);
+
+    addDetailRow(
+      propertyDetailsContent,
+      'Submitted On',
+      formatDate(property.created_at)
+    );
+  }
+
+  async function openPropertyDetails(property) {
+    if (
+      !propertyModal ||
+      !propertyDetailsContent ||
+      !propertyMediaContent
+    ) {
+      showPropertyMessage(
+        'Property details panel is unavailable. Check dashboard.html.',
+        true
+      );
+      return;
+    }
+
+    selectedProperty = property.id;
+
+    renderPropertyDetails(property);
+    propertyModal.hidden = false;
+
+    if (approvePropertyButton) {
+      approvePropertyButton.disabled = false;
+      approvePropertyButton.hidden =
+        property.review_status === 'approved';
+    }
+
+    if (rejectPropertyButton) {
+      rejectPropertyButton.disabled = false;
+      rejectPropertyButton.hidden =
+        property.review_status === 'rejected';
+    }
+
+    await loadPropertyMedia(property.id);
+  }
+
+  function closePropertyDetails() {
+    if (propertyModal) propertyModal.hidden = true;
+    selectedProperty = null;
+
+    if (propertyMediaContent) {
+      propertyMediaContent.replaceChildren();
+    }
+  }
+
+  async function updatePropertyReview(newReviewStatus, button) {
+    if (!selectedProperty) {
+      showPropertyMessage('Please open a property first.', true);
+      return;
+    }
+
+    if (!['approved', 'rejected'].includes(newReviewStatus)) {
+      showPropertyMessage('Invalid review status.', true);
+      return;
+    }
+
+    const property = allProperties.find(
+      item => item.id === selectedProperty
+    );
+
+    if (!property) {
+      showPropertyMessage('Property not found. Refresh the dashboard.', true);
+      return;
+    }
+
+    if (
+      property.review_status === newReviewStatus &&
+      property.is_published === (newReviewStatus === 'approved')
+    ) {
+      showPropertyMessage(
+        `This property is already ${newReviewStatus}.`
+      );
+      return;
+    }
+
+    const originalText = button ? button.textContent : '';
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Saving...';
+    }
+
+    showPropertyMessage('Updating property review status...');
+
+    try {
+      const query = new URLSearchParams();
+      query.set('id', `eq.${selectedProperty}`);
+
+      const payload = {
+        review_status: newReviewStatus,
+        is_published: newReviewStatus === 'approved',
+        updated_at: new Date().toISOString()
+      };
+
+      const result = await supabaseRequest(
+        `properties?${query.toString()}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (!Array.isArray(result) || result.length === 0) {
+        throw new Error(
+          'Property was not updated. Check admin permissions.'
+        );
+      }
+
+      const updatedProperty = result[0];
+
+      allProperties = allProperties.map(item =>
+        item.id === selectedProperty
+          ? { ...item, ...updatedProperty }
+          : item
+      );
+
+      renderPropertyStats();
+      renderProperties();
+      renderPropertyDetails(updatedProperty);
+
+      showPropertyMessage(
+        newReviewStatus === 'approved'
+          ? 'Property approved and marked for publication.'
+          : 'Property rejected and unpublished.'
+      );
+
+      if (approvePropertyButton) {
+        approvePropertyButton.hidden =
+          newReviewStatus === 'approved';
+      }
+
+      if (rejectPropertyButton) {
+        rejectPropertyButton.hidden =
+          newReviewStatus === 'rejected';
+      }
+
+    } catch (error) {
+      console.error('Property review error:', error);
+
+      showPropertyMessage(
+        error.message || 'Could not update property review.',
+        true
+      );
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
     }
   }
 
@@ -840,10 +1368,31 @@
   // EVENT LISTENERS
   // ==========================================
 
-  searchInput.addEventListener('input', renderLeads);
-  serviceFilter.addEventListener('change', renderLeads);
-  statusFilter.addEventListener('change', renderLeads);
-  refreshButton.addEventListener('click', loadLeads);
+  if (searchInput) {
+    searchInput.addEventListener('input', renderLeads);
+  }
+
+  if (serviceFilter) {
+    serviceFilter.addEventListener('change', renderLeads);
+  }
+
+  if (statusFilter) {
+    statusFilter.addEventListener('change', renderLeads);
+  }
+
+  if (refreshButton) {
+    refreshButton.addEventListener('click', loadLeads);
+  }
+
+  if (closeModalButton) {
+    closeModalButton.addEventListener('click', closeLeadDetails);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeLeadDetails();
+    });
+  }
 
   if (followUpForm) {
     followUpForm.addEventListener('submit', createFollowUp);
@@ -857,28 +1406,57 @@
     refreshFollowUpsButton.addEventListener('click', loadFollowUps);
   }
 
-  if (closeModalButton) {
-    closeModalButton.addEventListener('click', closeLeadDetails);
+  if (propertySearchInput) {
+    propertySearchInput.addEventListener('input', renderProperties);
   }
 
-  if (modal) {
-    modal.addEventListener('click', function (event) {
-      if (event.target === modal) {
-        closeLeadDetails();
+  if (propertyTypeFilter) {
+    propertyTypeFilter.addEventListener('change', renderProperties);
+  }
+
+  if (propertyReviewFilter) {
+    propertyReviewFilter.addEventListener('change', renderProperties);
+  }
+
+  if (refreshPropertiesButton) {
+    refreshPropertiesButton.addEventListener('click', loadProperties);
+  }
+
+  if (closePropertyModalButton) {
+    closePropertyModalButton.addEventListener(
+      'click',
+      closePropertyDetails
+    );
+  }
+
+  if (propertyModal) {
+    propertyModal.addEventListener('click', event => {
+      if (event.target === propertyModal) {
+        closePropertyDetails();
       }
     });
   }
 
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && modal && !modal.hidden) {
-      closeLeadDetails();
-    }
-  });
+  if (approvePropertyButton) {
+    approvePropertyButton.addEventListener('click', () => {
+      updatePropertyReview('approved', approvePropertyButton);
+    });
+  }
+
+  if (rejectPropertyButton) {
+    rejectPropertyButton.addEventListener('click', () => {
+      updatePropertyReview('rejected', rejectPropertyButton);
+    });
+  }
 
   // ==========================================
-  // INITIALIZE DASHBOARD
+  // INITIAL LOAD
   // ==========================================
 
   loadLeads();
+
+  if (propertiesTableBody) {
+    loadProperties();
+  }
 
 })();
