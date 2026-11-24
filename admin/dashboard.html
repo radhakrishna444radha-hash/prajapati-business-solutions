@@ -30,6 +30,7 @@
 
     <p id="dashboard-message" role="status" hidden></p>
 
+    <!-- DASHBOARD STATS -->
     <section class="stats">
       <article class="stat-card">
         <p>Total Enquiries</p>
@@ -52,7 +53,92 @@
       </article>
     </section>
 
+    <!-- FOLLOW-UP MANAGEMENT -->
+    <section class="leads-section follow-ups-section">
+
+      <div class="section-heading">
+        <div>
+          <h2>Follow-up Management</h2>
+          <p>Schedule and manage customer follow-ups</p>
+        </div>
+
+        <button id="refresh-follow-ups" type="button">
+          Refresh Follow-ups
+        </button>
+      </div>
+
+      <form id="follow-up-form" class="follow-up-form">
+
+        <div class="form-field">
+          <label for="follow-up-lead">Select Customer / Lead</label>
+          <select id="follow-up-lead" required>
+            <option value="">Select a customer</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="follow-up-at">Follow-up Date &amp; Time</label>
+          <input
+            type="datetime-local"
+            id="follow-up-at"
+            required
+          >
+        </div>
+
+        <div class="form-field">
+          <label for="follow-up-notes">Follow-up Notes</label>
+          <textarea
+            id="follow-up-notes"
+            rows="3"
+            placeholder="Write customer discussion or follow-up notes..."
+          ></textarea>
+        </div>
+
+        <button id="save-follow-up" type="submit">
+          Schedule Follow-up
+        </button>
+
+      </form>
+
+      <p id="follow-up-message" role="status" hidden></p>
+
+      <div class="filters">
+        <select id="filter-follow-up-status" aria-label="Filter follow-ups">
+          <option value="">All Follow-ups</option>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Lead ID</th>
+              <th>Follow-up Date</th>
+              <th>Notes</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="follow-ups-table-body">
+            <tr>
+              <td colspan="6">Loading follow-ups...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="table-note" id="follow-ups-count"></p>
+
+    </section>
+
+    <!-- CUSTOMER ENQUIRIES -->
     <section class="leads-section">
+
       <div class="section-heading">
         <div>
           <h2>Customer Enquiries</h2>
@@ -110,6 +196,7 @@
       </div>
 
       <p class="table-note" id="leads-count"></p>
+
     </section>
 
     <!-- LEAD DETAILS MODAL -->
