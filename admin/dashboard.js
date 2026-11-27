@@ -987,7 +987,7 @@
 
       query.set(
         'select',
-        'id,title,slug,description,property_type,listing_type,city,state,address,price,area_sqft,bedrooms,bathroom,status,is_published,created_by,created_at,updated_at,owner_name,owner_phone,owner_email,review_status'
+        'id,title,slug,description,property_type,listing_type,city,state,address,price,area_sqft,bedrooms,bathrooms,status,is_published,created_by,created_at,updated_at,owner_name,owner_phone,owner_email,review_status'
       );
 
       query.set('order', 'created_at.desc');
@@ -1184,7 +1184,7 @@
     addDetailRow(propertyDetailsContent, 'Price', property.price);
     addDetailRow(propertyDetailsContent, 'Area (sq. ft.)', property.area_sqft);
     addDetailRow(propertyDetailsContent, 'Bedrooms', property.bedrooms);
-    addDetailRow(propertyDetailsContent, 'Bathrooms', property.bathroom);
+    addDetailRow(propertyDetailsContent, 'Bathrooms', property.bathrooms);
     addDetailRow(propertyDetailsContent, 'Availability', property.status);
     addDetailRow(
       propertyDetailsContent,

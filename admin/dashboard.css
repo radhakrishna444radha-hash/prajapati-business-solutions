@@ -1,8 +1,10 @@
 
 /* ==========================================
    PRAJAPATI BUSINESS SOLUTIONS
-   ADMIN DASHBOARD - COMPLETE STYLES
+   ADMIN DASHBOARD - COMPLETE UPGRADED CSS
 ========================================== */
+
+/* GLOBAL */
 
 * {
   box-sizing: border-box;
@@ -26,6 +28,10 @@ textarea {
 
 button {
   cursor: pointer;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 /* ==========================================
@@ -59,6 +65,7 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* ==========================================
@@ -156,6 +163,7 @@ button {
   border: 1px solid #eee9e1;
   border-radius: 11px;
   box-shadow: 0 3px 12px rgba(41, 37, 31, 0.04);
+  min-width: 0;
 }
 
 .stat-card h3 {
@@ -170,6 +178,7 @@ button {
   color: #29251f;
   font-size: 30px;
   font-weight: bold;
+  overflow-wrap: anywhere;
 }
 
 /* ==========================================
@@ -177,7 +186,10 @@ button {
 ========================================== */
 
 .leads-section,
-.follow-ups-section {
+.follow-ups-section,
+.properties-section,
+.property-management-section,
+#property-management-section {
   background: #fff;
   padding: 25px;
   margin-bottom: 30px;
@@ -219,7 +231,11 @@ button {
 }
 
 .filters input,
-.filters select {
+.filters select,
+#search-properties,
+#filter-property-type,
+#filter-property-status,
+#filter-follow-up-status {
   width: 100%;
   min-width: 0;
   padding: 12px;
@@ -231,13 +247,17 @@ button {
 }
 
 .filters input:focus,
-.filters select:focus {
+.filters select:focus,
+#search-properties:focus,
+#filter-property-type:focus,
+#filter-property-status:focus,
+#filter-follow-up-status:focus {
   outline: 2px solid rgba(139, 94, 39, 0.25);
   border-color: #8b5e27;
 }
 
 /* ==========================================
-   TABLE
+   TABLES
 ========================================== */
 
 .table-wrapper {
@@ -344,13 +364,15 @@ tbody tr:last-child td {
 }
 
 .status-converted,
-.status-completed {
+.status-completed,
+.status-approved {
   background: #e4f3e8;
   color: #28643a;
 }
 
 .status-lost,
-.status-cancelled {
+.status-cancelled,
+.status-rejected {
   background: #f9e7e4;
   color: #a33328;
 }
@@ -394,7 +416,8 @@ tbody tr:last-child td {
    LEAD DETAILS MODAL
 ========================================== */
 
-#lead-details-modal {
+#lead-details-modal,
+#property-details-modal {
   position: fixed;
   inset: 0;
   z-index: 999;
@@ -406,7 +429,8 @@ tbody tr:last-child td {
   overflow-y: auto;
 }
 
-#lead-details-modal.active {
+#lead-details-modal.active,
+#property-details-modal.active {
   display: flex;
 }
 
@@ -437,9 +461,11 @@ tbody tr:last-child td {
   font-size: 20px;
 }
 
-#close-lead-details {
+#close-lead-details,
+#close-property-details {
   width: 35px;
   height: 35px;
+  flex-shrink: 0;
   border: none;
   border-radius: 50%;
   background: #f1ece4;
@@ -448,7 +474,8 @@ tbody tr:last-child td {
   line-height: 1;
 }
 
-#close-lead-details:hover {
+#close-lead-details:hover,
+#close-property-details:hover {
   background: #e6ded1;
 }
 
@@ -468,6 +495,7 @@ tbody tr:last-child td {
   border: 1px solid #eee9e1;
   border-radius: 8px;
   overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .detail-item label {
@@ -630,12 +658,6 @@ tbody tr:last-child td {
 
 #filter-follow-up-status {
   min-width: 180px;
-  padding: 11px 12px;
-  border: 1px solid #ddd5c9;
-  border-radius: 7px;
-  background: #fff;
-  color: #29251f;
-  font-size: 13px;
 }
 
 #refresh-follow-ups {
@@ -661,6 +683,191 @@ tbody tr:last-child td {
   padding: 8px 10px;
   font-size: 11px;
   white-space: nowrap;
+}
+
+/* ==========================================
+   PROPERTY MANAGEMENT
+========================================== */
+
+.properties-section,
+.property-management-section,
+#property-management-section {
+  margin-bottom: 30px;
+}
+
+#property-management-message {
+  margin: 15px 0;
+  padding: 12px 15px;
+  border-radius: 7px;
+  background: #fff3e0;
+  color: #70491c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#refresh-properties {
+  white-space: nowrap;
+}
+
+#search-properties {
+  width: 100%;
+  min-width: 0;
+}
+
+#properties-table-body td {
+  vertical-align: middle;
+}
+
+#properties-table-body td:last-child {
+  white-space: nowrap;
+}
+
+#properties-table-body button {
+  margin: 3px;
+  padding: 8px 11px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+#properties-table-body button:hover {
+  opacity: 0.85;
+}
+
+#properties-table-body .btn-primary {
+  background: #8b5e27;
+  color: #fff;
+}
+
+#properties-table-body .btn-success {
+  background: #e4f3e8;
+  color: #28643a;
+}
+
+#properties-table-body .btn-danger {
+  background: #f9e7e4;
+  color: #a33328;
+}
+
+/* Property review labels */
+
+.status-approved {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #e4f3e8;
+  color: #28643a;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.status-rejected {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #f9e7e4;
+  color: #a33328;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* Property statistics */
+
+#total-properties,
+#pending-properties,
+#published-properties,
+#inactive-properties {
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   PROPERTY DETAILS MODAL
+========================================== */
+
+#property-details-modal {
+  z-index: 1000;
+}
+
+#property-details-modal .modal-content {
+  max-width: 900px;
+}
+
+#property-details-modal .modal-header h2 {
+  font-size: 20px;
+}
+
+#property-details-content,
+#property-media-content {
+  margin-bottom: 20px;
+}
+
+.property-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.property-details-grid .detail-item {
+  padding: 14px;
+  background: #fcfaf6;
+  border: 1px solid #eee9e1;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* ==========================================
+   PROPERTY PHOTOS AND VIDEOS
+========================================== */
+
+#property-media-content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+#property-media-content img,
+#property-media-content video {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  background: #f5f2eb;
+  border: 1px solid #eee9e1;
+  border-radius: 8px;
+}
+
+#property-media-content video {
+  min-height: 180px;
+}
+
+/* ==========================================
+   PROPERTY APPROVE / REJECT BUTTONS
+========================================== */
+
+#approve-property,
+#reject-property {
+  margin: 8px 8px 0 0;
+  min-width: 120px;
+}
+
+#approve-property {
+  background: #e4f3e8;
+  color: #28643a;
+}
+
+#approve-property:hover {
+  background: #d3e9d9;
+}
+
+#reject-property {
+  background: #f9e7e4;
+  color: #a33328;
+}
+
+#reject-property:hover {
+  background: #f2d4cf;
 }
 
 /* ==========================================
@@ -752,7 +959,10 @@ tbody tr:last-child td {
   }
 
   .leads-section,
-  .follow-ups-section {
+  .follow-ups-section,
+  .properties-section,
+  .property-management-section,
+  #property-management-section {
     padding: 16px;
   }
 
@@ -792,7 +1002,8 @@ tbody tr:last-child td {
     width: 100%;
   }
 
-  .lead-details-grid {
+  .lead-details-grid,
+  .property-details-grid {
     grid-template-columns: 1fr;
   }
 
@@ -800,21 +1011,41 @@ tbody tr:last-child td {
     grid-column: 1;
   }
 
-  #lead-details-modal {
+  #lead-details-modal,
+  #property-details-modal {
     padding: 10px;
   }
 
-  .modal-content {
+  .modal-content,
+  #property-details-modal .modal-content {
     padding: 17px;
     max-height: 94vh;
   }
 
-  .modal-header h2 {
+  .modal-header h2,
+  #property-details-modal .modal-header h2 {
     font-size: 17px;
   }
 
   .status-update {
     min-width: 170px;
+  }
+
+  #refresh-properties,
+  #search-properties,
+  #filter-property-type,
+  #filter-property-status {
+    width: 100%;
+  }
+
+  #property-media-content {
+    grid-template-columns: 1fr;
+  }
+
+  #approve-property,
+  #reject-property {
+    width: 100%;
+    margin: 5px 0;
   }
 }
 
@@ -835,4 +1066,10 @@ tbody tr:last-child td {
     padding: 10px 12px;
     font-size: 12px;
   }
+
+  .modal-content,
+  #property-details-modal .modal-content {
+    padding: 13px;
+  }
 }
+ 
